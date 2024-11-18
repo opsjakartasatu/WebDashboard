@@ -1,188 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Esri Leaflet Popup dengan Tabel Informasi dan Lampiran</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <link rel="stylesheet" href="assets/css/Control.FullScreen.css" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tes</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            crossorigin=""
+        ></script>
+        <link rel="stylesheet" href="assets/css/Control.FullScreen.css" />
 
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
-    <script src="https://unpkg.com/esri-leaflet-vector@4.2.3/dist/esri-leaflet-vector.js"></script>
+        <!-- Load Esri Leaflet from CDN -->
+        <script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
+        <script src="https://unpkg.com/esri-leaflet-vector@4.2.3/dist/esri-leaflet-vector.js"></script>
 
-    <!-- Load Leaflet Geoman from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
-    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
-    <style>
-      #map {
-        height: 500px;
-        width: 103%;
-      }
+        <!-- Load Leaflet Geoman from CDN -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css"
+        />
+        <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+        <style>
+            #map {
+                height: 500px;
+                width: 103%;
+            }
 
-      .popup-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
+            .popup-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
 
-      .popup-table th,
-      .popup-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-      }
+            .popup-table th,
+            .popup-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
 
-      .popup-table th {
-        background-color: #f2f2f2;
-      }
+            .popup-table th {
+                background-color: #f2f2f2;
+            }
 
-      .popup-table td {
-        text-align: left;
-      }
+            .popup-table td {
+                text-align: left;
+            }
 
-      .popup-header {
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
+            .popup-header {
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
 
-      .popup-content {
-        margin-bottom: 10px;
-      }
-    </style>
-  </head>
+            .popup-content {
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
 
-  <body>
-    <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
-    <script src="https://unpkg.com/esri-leaflet"></script>
-    <script src="assets/js/Control.FullScreen.js"></script>
-    <script src="https://unpkg.com/leaflet.path.drag@0.0.6/src/Path.Drag.js"></script>
-    <script src="https://unpkg.com/leaflet-editable@1.2.0/src/Leaflet.Editable.js"></script>
+    <body>
+        <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
+        <script src="https://unpkg.com/esri-leaflet"></script>
+        <script src="assets/js/Control.FullScreen.js"></script>
+        <script src="https://unpkg.com/leaflet.path.drag@0.0.6/src/Path.Drag.js"></script>
+        <script src="https://unpkg.com/leaflet-editable@1.2.0/src/Leaflet.Editable.js"></script>
 
-    <div id="map"></div>
-    <script>
-      // Inisialisasi peta
+        <div id="map"></div>
+        <script>
+            // Inisialisasi peta
 
-      var map = L.map("map", {
-        center: [-6.175365677494854, 106.82714821651759],
-        editable: true,
-        zoom: 14,
-        fullscreenControl: true,
-      });
-
-      // Tambahkan basemap
-      L.esri.basemapLayer("Topographic").addTo(map);
-
-      // Tambahkan layer fitur poligon
-      var featureLayer = L.esri
-        .featureLayer({
-          url: "https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0",
-          style: function () {
-            return {
-              color: "#70ca49",
-              weight: 2,
-            };
-          },
-          onEachFeature: function (feature, layer) {
-            console.log("Fitur diklik:", feature); // Log fitur
-            layer.on("click", function (e) {
-              console.log("Layer diklik:", e); // Log peristiwa klik
-              var objectId = feature.properties.objectid || feature.properties.OBJECTID;
-              var kecamatan = feature.properties.wadmkc;
-              var kelurahan = feature.properties.wadmkd;
-              console.log("Object ID:", objectId); // Log Object ID
-              showPopupWithAttachment(objectId, e.latlng, kecamatan, kelurahan);
+            var map = L.map("map", {
+                center: [-6.175365677494854, 106.82714821651759],
+                editable: true,
+                zoom: 14,
+                fullscreenControl: true,
             });
-          },
-        })
-        .addTo(map);
 
-      // Fungsi untuk mengambil dan menampilkan lampiran dalam popup
-      function showPopupWithAttachment(objectId, latlng, kecamatan, kelurahan) {
-        if (!objectId) {
-          console.error("Tidak ditemukan Object ID");
-          return;
-        }
+            // Tambahkan basemap
+            L.esri.basemapLayer("Topographic").addTo(map);
 
-        console.log("Mengambil lampiran untuk objectId:", objectId); // Log objectId
+            // Tambahkan layer fitur poligon
+            var featureLayer = L.esri
+                .featureLayer({
+                    url: "https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0",
+                    style: function () {
+                        return {
+                            color: "#70ca49",
+                            weight: 2,
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        console.log("Fitur diklik:", feature); // Log fitur
+                        layer.on("click", function (e) {
+                            console.log("Layer diklik:", e); // Log peristiwa klik
+                            var objectId =
+                                feature.properties.objectid ||
+                                feature.properties.OBJECTID;
+                            var kecamatan = feature.properties.wadmkc;
+                            var kelurahan = feature.properties.wadmkd;
+                            console.log("Object ID:", objectId); // Log Object ID
+                            showPopupWithAttachment(
+                                objectId,
+                                e.latlng,
+                                kecamatan,
+                                kelurahan
+                            );
+                        });
+                    },
+                })
+                .addTo(map);
 
-        // Menggunakan fitur query untuk mengambil lampiran
-        L.esri.request("https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0/" + objectId + "/attachments", {}, function (error, response) {
-          if (error) {
-            console.error("Kesalahan mengambil lampiran:", error);
-            return;
-          }
+            // Fungsi untuk mengambil dan menampilkan lampiran dalam popup
+            function showPopupWithAttachment(
+                objectId,
+                latlng,
+                kecamatan,
+                kelurahan
+            ) {
+                if (!objectId) {
+                    console.error("Tidak ditemukan Object ID");
+                    return;
+                }
 
-          console.log("Respons lampiran:", response); // Log respons
+                console.log("Mengambil lampiran untuk objectId:", objectId); // Log objectId
 
-          var attachments = response.attachmentInfos;
-          console.log("Lampiran untuk objectId " + objectId + ":", attachments);
+                // Menggunakan fitur query untuk mengambil lampiran
+                L.esri.request(
+                    "https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0/" +
+                        objectId +
+                        "/attachments",
+                    {},
+                    function (error, response) {
+                        if (error) {
+                            console.error(
+                                "Kesalahan mengambil lampiran:",
+                                error
+                            );
+                            return;
+                        }
 
-          var attachmentHtml = '<div class="popup-content">';
-          attachmentHtml += '<div class="popup-header">Informasi</div>';
-          attachmentHtml += '<table class="popup-table">';
-          attachmentHtml += "<tr><th>Kecamatan</th><td>" + kecamatan + "</td></tr>";
-          attachmentHtml += "<tr><th>Kelurahan</th><td>" + kelurahan + "</td></tr>";
-          attachmentHtml += "</table>";
-          attachmentHtml += '<div class="popup-header">Lampiran</div>';
+                        console.log("Respons lampiran:", response); // Log respons
 
-          if (attachments && attachments.length > 0) {
-            attachmentHtml += "<ul>";
-            attachments.forEach(function (attachment) {
-              var url = "https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0/" + objectId + "/attachments/" + attachment.id;
-              var name = attachment.name;
-              attachmentHtml += '<li><a href="' + url + '" target="_blank">' + name + "</a></li>";
+                        var attachments = response.attachmentInfos;
+                        console.log(
+                            "Lampiran untuk objectId " + objectId + ":",
+                            attachments
+                        );
+
+                        var attachmentHtml = '<div class="popup-content">';
+                        attachmentHtml +=
+                            '<div class="popup-header">Informasi</div>';
+                        attachmentHtml += '<table class="popup-table">';
+                        attachmentHtml +=
+                            "<tr><th>Kecamatan</th><td>" +
+                            kecamatan +
+                            "</td></tr>";
+                        attachmentHtml +=
+                            "<tr><th>Kelurahan</th><td>" +
+                            kelurahan +
+                            "</td></tr>";
+                        attachmentHtml += "</table>";
+                        attachmentHtml +=
+                            '<div class="popup-header">Lampiran</div>';
+
+                        if (attachments && attachments.length > 0) {
+                            attachmentHtml += "<ul>";
+                            attachments.forEach(function (attachment) {
+                                var url =
+                                    "https://tataruang.jakarta.go.id/server/rest/services/Hosted/Kependudukan_Jakpus/FeatureServer/0/" +
+                                    objectId +
+                                    "/attachments/" +
+                                    attachment.id;
+                                var name = attachment.name;
+                                attachmentHtml +=
+                                    '<li><a href="' +
+                                    url +
+                                    '" target="_blank">' +
+                                    name +
+                                    "</a></li>";
+                            });
+                            attachmentHtml += "</ul>";
+                        } else {
+                            attachmentHtml +=
+                                "<p>Tidak ada lampiran tersedia.</p>";
+                        }
+
+                        L.popup()
+                            .setLatLng(latlng)
+                            .setContent(attachmentHtml)
+                            .openOn(map);
+                    }
+                );
+            }
+
+            // Add drawing tools
+            map.pm.addControls({
+                editControls: false,
+                drawMarker: false,
+                drawPolyline: false,
+                drawCircle: false,
+                drawText: false,
+                drawCircleMarker: false,
             });
-            attachmentHtml += "</ul>";
-          } else {
-            attachmentHtml += "<p>Tidak ada lampiran tersedia.</p>";
-          }
 
-          L.popup().setLatLng(latlng).setContent(attachmentHtml).openOn(map);
-        });
-      }
+            // when users CMD/CTRL click an active editable feature,
+            // remove it from the map and delete it from the service
+            featureLayer.on("click", function (e) {
+                if (
+                    (e.originalEvent.ctrlKey || e.originalEvent.metaKey) &&
+                    e.layer.pm.enabled()
+                ) {
+                    // delete expects an id, not the whole geojson object
+                    featureLayer.deleteFeature(e.layer.feature.id);
+                }
+            });
 
-      // Add drawing tools
-      map.pm.addControls({
-        editControls: false,
-        drawMarker: false,
-        drawPolyline: false,
-        drawCircle: false,
-        drawText: false,
-        drawCircleMarker: false,
-      });
+            // when users double click a graphic, toggle its editable status
+            // but when deselecting via double click, pass the geometry update to the service
+            featureLayer.on("dblclick", function (e) {
+                e.layer.pm.toggleEdit({
+                    draggable: true,
+                });
+                if (!e.layer.pm.enabled()) {
+                    featureLayer.updateFeature(e.layer.toGeoJSON());
+                }
+            });
 
-      // when users CMD/CTRL click an active editable feature,
-      // remove it from the map and delete it from the service
-      featureLayer.on("click", function (e) {
-        if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && e.layer.pm.enabled()) {
-          // delete expects an id, not the whole geojson object
-          featureLayer.deleteFeature(e.layer.feature.id);
-        }
-      });
+            // when a new feature is drawn using the toolbar,
+            // pass the edit to the featureLayer service
+            map.on("pm:create", function (e) {
+                featureLayer.addFeature(
+                    e.layer.toGeoJSON(),
+                    function (error, response) {
+                        if (error || !response.success) {
+                            console.log(error, response);
+                        }
 
-      // when users double click a graphic, toggle its editable status
-      // but when deselecting via double click, pass the geometry update to the service
-      featureLayer.on("dblclick", function (e) {
-        e.layer.pm.toggleEdit({
-          draggable: true,
-        });
-        if (!e.layer.pm.enabled()) {
-          featureLayer.updateFeature(e.layer.toGeoJSON());
-        }
-      });
-
-      // when a new feature is drawn using the toolbar,
-      // pass the edit to the featureLayer service
-      map.on("pm:create", function (e) {
-        featureLayer.addFeature(e.layer.toGeoJSON(), function (error, response) {
-          if (error || !response.success) {
-            console.log(error, response);
-          }
-
-          e.layer.remove();
-        });
-      });
-    </script>
-  </body>
+                        e.layer.remove();
+                    }
+                );
+            });
+        </script>
+    </body>
 </html>
